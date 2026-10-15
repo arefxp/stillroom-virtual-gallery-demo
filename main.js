@@ -76,7 +76,21 @@ function angleDiff(a, b) {
 
 function doorAhead() {
   const yaw = viewer.getPosition().yaw;
-  return rooms[current].doors.find(door => angleDiff(yaw, yawOf((door.box[0] + door.box[2]) / 2)) < 0.8);
+  return rooms[current].doors.find(door => angleDiff(yaw, doorYaw(door)) < 0.8);
+}
+
+const doorYaw = door => yawOf((door.box[0] + door.box[2]) / 2);
+
+// Turn toward the doorway, walk up to it, then step through.
+async function walkThrough(door) {
+  if (!viewer || busy) return;
+  busy = true;
+  try {
+    await viewer.animate({ yaw: doorYaw(door), pitch: 0, zoom: BASE_ZOOM + STEPS * STEP_ZOOM, speed: '6rpm' });
+  } finally {
+    busy = false;
+  }
+  goTo(door.to);
 }
 
 function setMarkers() {
@@ -84,7 +98,16 @@ function setMarkers() {
   const hit = { fill: 'rgba(0,0,0,0)', stroke: 'none' };
   markers.setMarkers([
     ...room.art.map((item, i) => ({ id: `art-${i}`, polygon: rect(...item.box), svgStyle: hit, data: { art: item } })),
-    ...room.doors.map((door, i) => ({ id: `door-${i}`, polygon: rect(...door.box), svgStyle: hit, data: { door: door.to } })),
+    ...room.doors.map((door, i) => ({ id: `door-${i}`, polygon: rect(...door.box), svgStyle: hit, data: { door } })),
+    // Street View–style arrow on the floor, in the direction of each doorway.
+    ...room.doors.map((door, i) => ({
+      id: `arrow-${i}`,
+      position: { yaw: doorYaw(door), pitch: -0.38 },
+      html: `<button class="floor-arrow" type="button" aria-label="Walk to ${rooms[door.to].name}"><svg viewBox="0 0 100 70" aria-hidden="true"><path d="M10 62 50 18l40 44" /></svg><span>${rooms[door.to].name}</span></button>`,
+      size: { width: 150, height: 120 },
+      anchor: 'center center',
+      data: { door },
+    })),
   ]);
 }
 
@@ -114,7 +137,7 @@ function walk(direction) {
   }
   step = Math.max(0, Math.min(STEPS, step + direction));
   const target = { zoom: BASE_ZOOM + step * STEP_ZOOM, speed: '8rpm' };
-  if (direction > 0 && door) Object.assign(target, { yaw: yawOf((door.box[0] + door.box[2]) / 2), pitch: 0 });
+  if (direction > 0 && door) Object.assign(target, { yaw: doorYaw(door), pitch: 0 });
   viewer.animate(target);
 }
 
@@ -173,7 +196,7 @@ try {
   markers = viewer.getPlugin(MarkersPlugin);
   markers.addEventListener('select-marker', ({ marker }) => {
     if (marker.data.art) openArt(marker.data.art);
-    else if (marker.data.door) goTo(marker.data.door);
+    else if (marker.data.door) walkThrough(marker.data.door);
   });
   viewer.addEventListener('ready', () => {
     setMarkers();
