@@ -46,6 +46,11 @@ function move(direction) {
   if (stop && tour) tour.setCurrentNode(stop.id);
 }
 
+function goToRoom(roomIndex) {
+  const stop = stops[roomIndex * 3 + 1];
+  if (stop && tour) tour.setCurrentNode(stop.id);
+}
+
 function look(direction) {
   if (!viewer) return;
   const position = viewer.getPosition();
@@ -70,6 +75,7 @@ document.querySelector('#look-left').addEventListener('click', () => look(-1));
 document.querySelector('#look-right').addEventListener('click', () => look(1));
 backButton.addEventListener('click', () => move(-1));
 forwardButton.addEventListener('click', () => move(1));
+document.querySelectorAll('[data-room]').forEach(button => button.addEventListener('click', () => goToRoom(Number(button.dataset.room))));
 document.querySelector('#zoom-in').addEventListener('click', () => viewer?.zoom(viewer.getZoomLevel() + 15));
 document.querySelector('#zoom-out').addEventListener('click', () => viewer?.zoom(viewer.getZoomLevel() - 15));
 document.querySelector('#close-dialog').addEventListener('click', () => dialog.close());
@@ -99,7 +105,7 @@ const nodes = stops.map((stop, index) => ({
   ],
   markers: markerPositions.map((position, markerIndex) => ({
     id: `${stop.id}-art-${markerIndex}`,
-    html: '<span class="art-hotspot" role="button" aria-label="Open photograph"></span>',
+    html: `<span class="art-hotspot" role="button" aria-label="Open photograph"><img src="${markerIndex % 2 ? artworks.staircase.image : artworks.arcade.image}" alt="" /></span>`,
     size: { width: 120, height: 150 },
     position,
     data: { art: markerIndex % 2 ? 'staircase' : 'arcade' },
