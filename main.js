@@ -81,18 +81,6 @@ function doorAhead() {
 
 const doorYaw = door => yawOf((door.box[0] + door.box[2]) / 2);
 
-// Turn toward the doorway, walk up to it, then step through.
-async function walkThrough(door) {
-  if (!viewer || busy) return;
-  busy = true;
-  try {
-    await viewer.animate({ yaw: doorYaw(door), pitch: 0, zoom: BASE_ZOOM + STEPS * STEP_ZOOM, speed: '6rpm' });
-  } finally {
-    busy = false;
-  }
-  goTo(door.to);
-}
-
 function setMarkers() {
   const room = rooms[current];
   const hit = { fill: 'rgba(0,0,0,0)', stroke: 'none' };
@@ -111,18 +99,29 @@ function setMarkers() {
   ]);
 }
 
-async function goTo(id) {
+// Walk-through: push into the doorway, cross-fade into the next room while
+// still zoomed in, then ease back out as if you just stepped inside.
+async function goTo(id, door) {
   if (!viewer || busy || id === current) return;
   busy = true;
-  current = id;
-  step = 0;
-  roomName.textContent = rooms[id].name;
-  fallback.style.backgroundImage = `url('${rooms[id].image}')`;
+  shell.classList.add('moving');
   markers.clearMarkers();
   try {
-    await viewer.setPanorama(rooms[id].image, { position: { yaw: 0, pitch: 0 }, zoom: BASE_ZOOM, transition: 900 });
+    const { yaw } = viewer.getPosition();
+    await viewer.animate({ yaw: door ? doorYaw(door) : yaw, pitch: 0, zoom: 92, speed: 1100, easing: 'inQuad' });
+    current = id;
+    step = 0;
+    roomName.textContent = rooms[id].name;
+    fallback.style.backgroundImage = `url('${rooms[id].image}')`;
+    await viewer.setPanorama(rooms[id].image, {
+      position: { yaw: 0, pitch: 0 }, zoom: 80, showLoader: false,
+      transition: { speed: 450, rotation: false },
+    });
+    shell.classList.remove('moving');
+    await viewer.animate({ zoom: BASE_ZOOM, speed: 1300, easing: 'outQuad' });
     setMarkers();
   } finally {
+    shell.classList.remove('moving');
     busy = false;
   }
 }
@@ -130,9 +129,9 @@ async function goTo(id) {
 function walk(direction) {
   if (!viewer || busy) return;
   const door = doorAhead();
-  if (direction > 0 && step >= STEPS && door) return goTo(door.to);
+  if (direction > 0 && step >= STEPS && door) return goTo(door.to, door);
   if (direction < 0 && step === 0) {
-    if (current !== 'entrance') goTo('entrance');
+    if (current !== 'entrance') goTo('entrance', rooms[current].doors[0]);
     return;
   }
   step = Math.max(0, Math.min(STEPS, step + direction));
@@ -180,6 +179,7 @@ document.addEventListener('keydown', event => {
   if (key === 'arrowdown' || key === 's') walk(-1);
 });
 roomName.textContent = rooms[current].name;
+Object.values(rooms).forEach(room => { new Image().src = room.image; }); // warm the cache so transitions don't stall
 
 try {
   const [{ Viewer }, { MarkersPlugin }] = await Promise.all([
@@ -196,7 +196,7 @@ try {
   markers = viewer.getPlugin(MarkersPlugin);
   markers.addEventListener('select-marker', ({ marker }) => {
     if (marker.data.art) openArt(marker.data.art);
-    else if (marker.data.door) walkThrough(marker.data.door);
+    else if (marker.data.door) goTo(marker.data.door.to, marker.data.door);
   });
   viewer.addEventListener('ready', () => {
     setMarkers();
