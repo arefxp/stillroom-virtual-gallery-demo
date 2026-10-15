@@ -10,14 +10,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core@5.15.1/index.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/virtual-tour-plugin@5.15.1/index.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/markers-plugin@5.15.1/index.min.css" />
     <link rel="stylesheet" href="styles.css" />
     <script type="importmap">
       {"imports": {
         "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
         "@photo-sphere-viewer/core": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core@5.15.1/index.module.js",
-        "@photo-sphere-viewer/virtual-tour-plugin": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/virtual-tour-plugin@5.15.1/index.module.js",
         "@photo-sphere-viewer/markers-plugin": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/markers-plugin@5.15.1/index.module.js"
       }}
     </script>
@@ -33,14 +31,14 @@
           <h1 id="cover-title">Step inside the gallery</h1>
           <button id="enter-tour" type="button">Enter 360° tour</button>
         </div>
-        <p class="cover-note">Drag to look around. Scroll to zoom. Follow the floor arrows to move.</p>
+        <p class="cover-note">Drag to look around. Scroll to zoom. Use ↑ to walk forward and through doorways. Click any photograph to view it.</p>
       </section>
 
       <section class="tour" id="tour" aria-label="Full-screen virtual gallery" hidden>
         <div class="tour-fallback" id="tour-fallback" role="img" aria-label="Gallery entrance"></div>
         <div id="viewer" aria-label="Interactive 360-degree gallery view"></div>
         <div class="tour-bar">
-          <div><strong>Stillroom</strong><span id="room-name">Main room</span></div>
+          <div><strong>Stillroom</strong><span id="room-name">Entrance hall</span></div>
           <button id="exit-tour" type="button">Exit tour</button>
         </div>
         <div class="zoom-controls" aria-label="Zoom controls">
@@ -48,14 +46,14 @@
           <button id="zoom-out" type="button" aria-label="Zoom out">−</button>
         </div>
         <nav class="room-controls" aria-label="Choose a gallery room">
-          <button type="button" data-room="2">← Left room</button>
-          <button type="button" data-room="0">Main room</button>
-          <button type="button" data-room="1">Right room →</button>
+          <button type="button" data-room="left">← Left gallery</button>
+          <button type="button" data-room="entrance">Entrance hall</button>
+          <button type="button" data-room="right">Right gallery →</button>
         </nav>
         <div class="look-controls" aria-label="Look and move controls">
           <button id="look-left" type="button" aria-label="Look left">←</button>
-          <button id="move-back" type="button" aria-label="Move backward">↓</button>
-          <button id="move-forward" type="button" aria-label="Move forward">↑</button>
+          <button id="move-back" type="button" aria-label="Step back">↓</button>
+          <button id="move-forward" type="button" aria-label="Step forward">↑</button>
           <button id="look-right" type="button" aria-label="Look right">→</button>
         </div>
       </section>
@@ -63,7 +61,8 @@
 
     <dialog id="art-dialog" aria-label="Enlarged photograph">
       <button class="dialog-close" id="close-dialog" type="button" aria-label="Close photograph">×</button>
-      <img id="art-image" src="assets/artwork-arcade.webp" alt="" width="1024" height="1536" />
+      <img id="art-image" src="" alt="" />
+      <div class="art-caption"><h2 id="art-title"></h2><p id="art-description"></p></div>
     </dialog>
   </body>
 </html>
