@@ -40,7 +40,7 @@
         <div class="tour-fallback" id="tour-fallback" role="img" aria-label="Gallery entrance"></div>
         <div id="viewer" aria-label="Interactive 360-degree gallery view"></div>
         <div class="tour-bar">
-          <div><strong>Stillroom</strong><span id="room-name">Entrance</span></div>
+          <div><strong>Stillroom</strong><span id="room-name">Main room</span></div>
           <button id="exit-tour" type="button">Exit tour</button>
         </div>
         <div class="zoom-controls" aria-label="Zoom controls">
@@ -53,18 +53,12 @@
           <button id="move-forward" type="button" aria-label="Move forward">↑</button>
           <button id="look-right" type="button" aria-label="Look right">→</button>
         </div>
-        <p class="tour-help" id="tour-help">Drag to look • Scroll to zoom • Click a photograph to enlarge</p>
       </section>
     </main>
 
-    <dialog id="art-dialog" aria-labelledby="art-title">
+    <dialog id="art-dialog" aria-label="Enlarged photograph">
       <button class="dialog-close" id="close-dialog" type="button" aria-label="Close photograph">×</button>
       <img id="art-image" src="assets/artwork-arcade.webp" alt="" width="1024" height="1536" />
-      <div class="dialog-copy">
-        <h2 id="art-title"></h2>
-        <p id="art-description"></p>
-        <small>Generated sample artwork</small>
-      </div>
     </dialog>
   </body>
 </html>
