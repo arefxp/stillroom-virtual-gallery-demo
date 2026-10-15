@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#e8e3e0" />
+    <meta name="description" content="A short interactive demonstration of a virtual photography exhibition." />
+    <title>Stillroom — virtual gallery demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core@5.15.1/index.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/virtual-tour-plugin@5.15.1/index.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/markers-plugin@5.15.1/index.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="importmap">
+      {"imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+        "@photo-sphere-viewer/core": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core@5.15.1/index.module.js",
+        "@photo-sphere-viewer/virtual-tour-plugin": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/virtual-tour-plugin@5.15.1/index.module.js",
+        "@photo-sphere-viewer/markers-plugin": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/markers-plugin@5.15.1/index.module.js"
+      }}
+    </script>
+    <script type="module" src="main.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="small-wordmark" href="#top" aria-label="Stillroom home">Stillroom</a>
+      <nav aria-label="Main navigation">
+        <a href="#tour">Tour</a>
+        <a href="#works">Photographs</a>
+        <a href="#about">About</a>
+      </nav>
+      <span class="sample-label">Concept demo</span>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-note">
+          <p>A photography exhibition you can walk through online.</p>
+          <a class="primary-button" href="#tour">Enter the tour <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <img src="assets/artwork-arcade.webp" alt="" width="1024" height="1536" />
+        </div>
+        <h1 id="hero-title">STILLROOM</h1>
+        <p class="hero-foot">Three rooms. One short visit. Built with sample images.</p>
+      </section>
+
+      <section class="tour-section" id="tour" aria-labelledby="tour-title">
+        <div class="section-intro">
+          <h2 id="tour-title">Enter the gallery</h2>
+          <p>Drag to look around. Choose a room to move through the exhibition. Tap a photograph to see it closer.</p>
+        </div>
+        <div class="tour-shell" id="tour-shell">
+          <div class="tour-fallback" id="tour-fallback" role="img" aria-label="View of the sample gallery entrance"></div>
+          <div id="viewer" aria-label="Interactive 360-degree gallery view"></div>
+          <div class="tour-topline" aria-hidden="true"><span>Stillroom</span><span>Virtual exhibition</span></div>
+          <div class="tour-status" role="status" aria-live="polite"><span class="status-dot"></span><span id="room-name">Entrance</span></div>
+          <div class="tour-controls" aria-label="Gallery controls">
+            <button class="room-step" id="previous-room" type="button" aria-label="Previous room">←</button>
+            <div class="room-list" role="group" aria-label="Choose a room">
+              <button class="room-choice active" data-room="entrance" type="button" aria-current="true">Entrance</button>
+              <button class="room-choice" data-room="middle" type="button">Main room</button>
+              <button class="room-choice" data-room="alcove" type="button">Final room</button>
+            </div>
+            <button class="room-step" id="next-room" type="button" aria-label="Next room">→</button>
+          </div>
+          <button class="view-art" id="view-art" type="button">View this photograph <span aria-hidden="true">↗</span></button>
+          <p class="tour-hint" id="tour-hint">Drag to turn the view</p>
+        </div>
+      </section>
+
+      <section class="works-section" id="works" aria-labelledby="works-title">
+        <div class="works-copy">
+          <h2 id="works-title">Look closer</h2>
+          <p>Each picture can have its own title, story, and full-size view. These two are generated examples for the demo.</p>
+        </div>
+        <button class="work work-one" type="button" data-art="arcade" aria-label="View Light through the arcade">
+          <img src="assets/artwork-arcade.webp" alt="Black-and-white photograph of repeating stone arches" width="1024" height="1536" loading="lazy" />
+          <span>Light through the arcade</span>
+        </button>
+        <button class="work work-two" type="button" data-art="staircase" aria-label="View The turning stair">
+          <img src="assets/artwork-staircase.webp" alt="Black-and-white photograph of a spiral staircase" width="1024" height="1536" loading="lazy" />
+          <span>The turning stair</span>
+        </button>
+      </section>
+
+      <section class="about-section" id="about" aria-labelledby="about-title">
+        <h2 id="about-title">Visit anywhere.</h2>
+        <p>This is a sample exhibition, made with generated images. A real tour would use photographs of your gallery, connected room by room.</p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-top"><p>Sample concept for a photography exhibition</p><a href="#top">Back to top ↑</a></div>
+      <span class="footer-name" aria-hidden="true">STILLROOM</span>
+      <p>Demo imagery is generated. No real exhibition or artist is represented.</p>
+    </footer>
+
+    <dialog id="art-dialog" aria-labelledby="art-title">
+      <button class="dialog-close" id="close-dialog" type="button" aria-label="Close photograph">×</button>
+      <div class="dialog-layout">
+        <img id="art-image" src="assets/artwork-arcade.webp" alt="" width="1024" height="1536" />
+        <div class="dialog-copy"><h2 id="art-title"></h2><p id="art-description"></p><p>Generated sample artwork</p></div>
+      </div>
+    </dialog>
+  </body>
+</html>
